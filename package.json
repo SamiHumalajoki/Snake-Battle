@@ -1,18 +1,18 @@
 {
-  "name": "pong",
+  "name": "samis-app",
   "version": "1.0.0",
   "description": "pong game using sockets",
-  "main": "server.js",
-   "engines": {
+  "main": "index.js",
+  "engines": {
     "node": "6.2.0"
-   },
+  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3",
+    "express": "^4.17.1",
     "socket.io": "^2.1.1"
   }
 }
