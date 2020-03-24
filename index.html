@@ -18,14 +18,17 @@
   <script>
     $(function () {
       var socket = io();
+      var d = new Date();
+      var t = 0;
       $('form').submit(function(e){
         e.preventDefault(); // prevents page reloading
         socket.emit('chat message', $('#m').val());
         $('#m').val('');
+        t = d.getTime();
         return false;
       });
       socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+        $('#messages').append($('<li>').text(msg + (d.getTime()-t)));
       });
     });
   </script>
