@@ -21,6 +21,14 @@ function mouseMoved() {
   socket.emit('mouse', data);
 }
 
+function touchMoved() {
+  const data = {
+    x: mouseX,
+    y: mouseY
+  }
+  socket.emit('mouse', data);
+}
+
 function draw() {
   background(51);
   rect(mouseX, mouseY, 50, 50);
