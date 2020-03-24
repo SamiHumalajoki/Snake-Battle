@@ -1,12 +1,18 @@
 {
-  "name": "samis-app",
-  "version": "0.0.1",
-  "description": "my first socket.io app",
-  "dependencies": {
-    "express": "^4.17.1",
-    "socket.io": "^2.3.0"
-  },
+  "name": "pong",
+  "version": "1.0.0",
+  "description": "pong game using sockets",
+  "main": "server.js",
+   "engines": {
+    "node": "6.2.0"
+   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
   }
 }
