@@ -1,16 +1,18 @@
 var socket;
-var otherX = 100;
-var otherY = 100;
-var vx = -1;
+var otherX;
+var otherY;
+var vx = 1;
 var vy = 0;
-var blockSize = 20;
-var x = 400;
-var y = 400;
+var blockSize = 10;
+var x;
+var y;
 
 function setup() {
   createCanvas(500, 500);
   frameRate(10);
   background(51);
+  x = round(random(100,400));
+  y = round(random(100,400));
   socket = io();
   socket.on('move', (data) => {
     otherX = data.x;
@@ -52,7 +54,9 @@ function draw() {
   //background(51);
   x += vx * blockSize;
   y += vy * blockSize;
-  socket.emit('move', data);
-  rect(x, y, 20, 20);
-  rect(otherX, otherY, 20, 20);
+  socket.emit('move', {x:x, y: y});
+  rect(x, y, blockSize, blockSize);
+  if(otherX) {
+    rect(otherX, otherY, blockSize, blockSize);
+  }
 }
