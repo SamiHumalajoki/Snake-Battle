@@ -15,8 +15,8 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log(`${socket.id} disconnected`);
   })
-  socket.on('mouse', (data) => {
-    console.log(data);
-    socket.broadcast.emit('mouse', data);
+  socket.on('move', (data) => {
+    //console.log(data);
+    socket.broadcast.emit('move', data);
   })
 });
