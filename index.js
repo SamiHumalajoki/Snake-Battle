@@ -29,6 +29,10 @@ io.on('connection', (socket) => {
     }
   }
 
+  socket.on('ready', () => {
+    socket.broadcast.emit('ready');
+  })
+
   socket.on('hit', () => {
     socket.broadcast.emit('hit');
   })
