@@ -40,10 +40,6 @@ function setup() {
   textSize(fontSize);
   createCanvas(canvasWidth, canvasHeight);
   socket = io();
-  socket.on('ready', () => {
-    waitingForOpponent = false;
-    gameOver
-  });
   socket.on('startGame', () => {
     console.log('game started');
     roundNumber = 1;
@@ -133,7 +129,7 @@ function draw() {
     drawGameView();
   }
   else {
-    if (startSequence !== -1 && !waitingForOpponent) {
+    if (currentView === COUNTDOWN_VIEW) {
       drawCountdownView();
     }
     if (waitingForOpponent) {
@@ -200,6 +196,7 @@ function drawCountdownView() {
   textSize(countDownFontMax);
   text(startSequence.toString(), 0.5 * canvasWidth, 0.6 * canvasHeight);
   if (startSequence === -1) {
+    currentView = GAME_VIEW;
     gameOn = true;
     background(backgroundColor);
   }
