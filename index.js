@@ -32,6 +32,10 @@ io.on('connection', (socket) => {
   socket.on('hit', () => {
     socket.broadcast.emit('hit');
   })
+
+  socket.on('initialSnake', (data) => {
+    socket.broadcast.emit('initialSnake', data);
+  })
  
   socket.on('disconnect', () => {
     console.log(`${socket.id} disconnected`);
