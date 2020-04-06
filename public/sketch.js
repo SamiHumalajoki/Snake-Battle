@@ -6,8 +6,8 @@ let x;
 let y;
 let id = 0;
 let gridSize = 50
-let myScore;
-let opponentScore;
+let myScore = 0;
+let opponentScore = 0;
 let mySnake = [];
 let opponentSnake = [];
 let countdownValue;
@@ -20,23 +20,21 @@ let scoreboardHeight;
 let messageFontSize;
 let countDownFontMin;
 let countDownFontMax;
-let roundNumber;
+let roundNumber = 0;
 
-const WAITIN_FOR_OPPONENT_VIEW = 1;
-const COUNTDOWN_VIEW = 2;
-const GAME_VIEW = 3;
-const GAME_OVER_VIEW = 4;
-const OPPONENT_HAS_LEFT_VIEW = 5;
-let currentView = WAITIN_FOR_OPPONENT_VIEW;
+const OPENING_VIEW = 1;
+const WAITIN_FOR_OPPONENT_VIEW = 2;
+const COUNTDOWN_VIEW = 3;
+const GAME_VIEW = 4;
+const GAME_OVER_VIEW = 5;
+const OPPONENT_HAS_LEFT_VIEW = 6;
+let currentView = OPENING_VIEW;
 
 function setup() {
   setSizes();
   createCanvas(canvasWidth, canvasHeight);
   socket = io();
   socket.on('startGame', () => {
-    roundNumber = 1;
-    myScore = 0;
-    opponentScore = 0;
     startGame();
   });
   socket.on('stopGame', () => {
@@ -50,13 +48,11 @@ function setup() {
   });
   socket.on('hit', () => {
     myScore++;
-    roundNumber++;
     if (myScore < 5) {
-      startGame();
+      socket.emit('readyToStart');
    }
   else {
-    countdownValue = 5;
-    timeCount = millis();
+    roundNumber = 0;
     currentView = GAME_OVER_VIEW;
   }
   });
@@ -81,16 +77,24 @@ function keyPressed() {
       vy = 1;
     }
   }
+  if (currentView === OPENING_VIEW || currentView === GAME_OVER_VIEW || currentView === OPPONENT_HAS_LEFT_VIEW) {
+    currentView = WAITIN_FOR_OPPONENT_VIEW;
+    myScore = 0;
+    opponentScore = 0;
+    roundNumber = 0;
+    socket.emit('readyToStart');
+  }
 }
 
 function startGame() {
+  roundNumber++;
   opponentSnake = [];
   mySnake = [];
   background(backgroundColor);
   id = 0;
   x = round(random(gridSize));
   y = round(random(gridSize));
-  mySnake.push({x:x, y: y, id: id});
+  mySnake[0] = {x:x, y: y, id: id};
   countdownValue = 3;
   timeCount = millis();
   currentView = COUNTDOWN_VIEW;
@@ -114,6 +118,9 @@ function draw() {
     case COUNTDOWN_VIEW:
       drawCountdownView();
       break;
+    case OPENING_VIEW:
+      drawOpeningView();
+      break;
     case WAITIN_FOR_OPPONENT_VIEW:
       drawWaitingForOpponentView();
       break;
@@ -125,11 +132,21 @@ function draw() {
   } 
 }
 
+function drawOpeningView() {
+  background(backgroundColor);
+  fill(color(255));
+  textSize(countDownFontMin);
+  textAlign(CENTER, CENTER);
+  text('SNAKE BATTLE', 0.5 * canvasWidth, 0.4 * canvasHeight);
+  textSize(messageFontSize);
+  text('press any key to start the game', 0.5 * canvasWidth, 0.7 * canvasHeight);
+}
+
 function drawGameView() {
   if ( timeCount + moveInterval < millis() && 
       mySnake.length < opponentSnake.length + 1) {
     background(backgroundColor);
-    drawscoreboardView();
+    drawScoreboardView();
     timeCount = millis();
     x += vx;
     y += vy;
@@ -137,14 +154,12 @@ function drawGameView() {
         mySnake.find((block, index) => (index < mySnake.length - 1 && x === block.x && y === block.y))) {
       socket.emit('hit');
       opponentScore++;
-      roundNumber++;
       if (opponentScore < 5) {
-          startGame();
+          socket.emit('readyToStart');
       }
       else {
-        timeCount = millis();
-        countdownValue = 5;
         currentView = GAME_OVER_VIEW;
+        roundNumber = 0;
       }
     }
     if (x > gridSize) {x = 0;}
@@ -171,7 +186,7 @@ function drawGameView() {
 
 function drawCountdownView() {
   background(backgroundColor);
-  drawscoreboardView();
+  drawScoreboardView();
   mySnake[1] = {x: x + vx, y: y + vy, id: id};
   fill(color('yellow'));
   mySnake.forEach(block => {
@@ -215,11 +230,11 @@ function drawOpponentHasLeftView() {
   fill(color(255));
   textAlign(CENTER, CENTER);
   textSize(messageFontSize);
-  text('Your opponent has left the game',
-    canvasWidth / 2, canvasHeight / 2);
+  text('Your opponent has left the game', 0.5 * canvasWidth, 0.5 * canvasHeight);
+  text('press any key to start a new game', 0.5 * canvasWidth, 0.9 * canvasHeight);
 }
 
-function drawscoreboardView() {
+function drawScoreboardView() {
   fill(color(100));
   rect(0, 0, canvasWidth, scoreboardHeight);
   textSize(scoreboardHeight / 2);
@@ -233,7 +248,7 @@ function drawscoreboardView() {
 
 function drawGameOverView() {
   background(backgroundColor);
-  drawscoreboardView();
+  drawScoreboardView();
   fill(255);
   textSize(0.15 * canvasWidth);
   textAlign(CENTER, CENTER);
@@ -245,16 +260,5 @@ function drawGameOverView() {
     text('You lost', 0.5 * canvasWidth, 0.7 * canvasHeight);
   }
   textSize(messageFontSize);
-  if (timeCount + 1000 < millis()) {
-    timeCount = millis();
-    countdownValue--;
-  }
-  text(`new game will start in ${countdownValue} seconds`, 0.5 * canvasWidth, 0.9 * canvasHeight);
-  if (countdownValue === -1) {
-    roundNumber = 1;
-    myScore = 0;
-    opponentScore = 0;
-    startGame();
-    background(backgroundColor);
-  }
+  text('press any key to start a new game', 0.5 * canvasWidth, 0.9 * canvasHeight);
 }
