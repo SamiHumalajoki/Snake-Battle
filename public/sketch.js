@@ -137,9 +137,14 @@ function drawOpeningView() {
   fill(color(255));
   textSize(countDownFontMin);
   textAlign(CENTER, CENTER);
-  text('SNAKE BATTLE', 0.5 * canvasWidth, 0.4 * canvasHeight);
+  text('SNAKE BATTLE', 0.5 * canvasWidth, 0.3 * canvasHeight);
   textSize(messageFontSize);
-  text('press any key to start the game', 0.5 * canvasWidth, 0.7 * canvasHeight);
+  text('control the', 0.15 * canvasWidth, 0.6 * canvasHeight);
+  fill(color('yellow'));
+  text('yellow', 0.36 * canvasWidth, 0.6 * canvasHeight); 
+  fill(color('white'));
+  text('snake with arrow keys', 0.7 * canvasWidth, 0.6 * canvasHeight);
+  text('press any key to start the game', 0.5 * canvasWidth, 0.8 * canvasHeight);
 }
 
 function drawGameView() {
@@ -198,7 +203,6 @@ function drawCountdownView() {
       rect(block.x * blockSize, block.y * blockSize + scoreboardHeight, blockSize, blockSize);
     });
   }
-  
   if (timeCount + 1000 < millis()) {
     timeCount = millis();
     countdownValue--;
@@ -207,9 +211,17 @@ function drawCountdownView() {
   textAlign(CENTER, CENTER);
   fill(color(255));
   textSize(countDownFontMin);
-  text(`Round ${roundNumber} will start in`, 0.5 * canvasWidth, 0.3 * canvasHeight);
-  textSize(countDownFontMax);
-  text(countdownValue.toString(), 0.5 * canvasWidth, 0.6 * canvasHeight);
+  if (countdownValue > 0) {
+    text(`Round ${roundNumber} will start in`, 0.5 * canvasWidth, 0.3 * canvasHeight);
+  }
+  fill(color(100 + ((millis() - timeCount) / 1000) * 155));
+  textSize(countDownFontMin + ((millis() - timeCount) / 1000) * (countDownFontMax - countDownFontMin));
+  if (countdownValue > 0) {
+    text(countdownValue.toString(), 0.5 * canvasWidth, 0.6 * canvasHeight);
+  }
+  else {
+    text('GO!', 0.5 * canvasWidth, 0.6 * canvasHeight);
+  }
   if (countdownValue === -1) {
     currentView = GAME_VIEW;
     background(backgroundColor);
