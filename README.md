@@ -1,2 +1,2 @@
-# pong
-play classic pong-game online
+# Samis-app
+play classic snake battle game online
