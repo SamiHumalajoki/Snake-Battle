@@ -3,7 +3,7 @@
 const io = require('socket.io-client')
 var assert = require('chai'),assert;
 const expect = require('chai').expect;
-const Client = require('../public/sketch');
+const Game = require('../public/Game');
 
 const server = require('../index');
 const chai = require('chai');
@@ -93,12 +93,8 @@ describe('Client tests', function() {
   // test you create instead of running just once before the draw loop
   // beforeEach lets you setup the objects you want to test in an easy fashion.
   beforeEach(function() {
-      client = new Client(1);
-      client.socket = io.connect('http://localhost:3000', {
-        'reconnection delay' : 0
-        , 'reopen delay' : 0
-        , 'force new connection' : true
-    });
+      client = new Game(1);
+     // client.setSocket();
   });
 
   it('should be an object', function(done) {
@@ -109,8 +105,7 @@ describe('Client tests', function() {
   it('some object testing', function(done) {
     
     expect(client.currentView).to.be.equal(1);
-    client.x = 100
-    client.vx = 1;
+    expect(client.gridSize).to.be.equal(50);
     done();
   })
 });
