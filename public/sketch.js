@@ -33,7 +33,7 @@ let game;
 // käynnistetään. 
 function setup() {
   // alustetaaan uusi peli-olio Game.js-tiedoston Game()-luokan avulla.
-  game = new Game();
+  game = new Game(io());
   game.timeCount = millis();
   setSizes();
 //  P5.js-kehyksen funktio, jolla luodan uusi piirtopohja.

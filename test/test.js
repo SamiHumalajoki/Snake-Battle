@@ -86,26 +86,38 @@ describe('Server tests', function() {
 
 describe('Client tests', function() {
   // Will hold the reference to the ColorIncreaser class
-  let client;
-
+  let client1;
+  let client2;
+  let socket1;
+  let socket2;
   // beforeEach is a special function that is similar to the setup function in
   // p5.js.  The major difference it that this function runs before each it()
   // test you create instead of running just once before the draw loop
   // beforeEach lets you setup the objects you want to test in an easy fashion.
-  beforeEach(function() {
-      client = new Game(1);
-     // client.setSocket();
+  before(function() {
+    socket1 = io.connect('http://localhost:3000', {
+        'reconnection delay' : 0
+        , 'reopen delay' : 0
+        , 'force new connection' : true
+    });
+    socket2 = io.connect('http://localhost:3000', {
+        'reconnection delay' : 0
+        , 'reopen delay' : 0
+        , 'force new connection' : true
+    });
+    client1 = new Game(socket1);
+    client2 = new Game(socket2);
   });
 
   it('should be an object', function(done) {
-    expect(client).to.be.a('object');
+    expect(client1).to.be.a('object');
+    expect(client2).to.be.a('object');
     done();
   });
 
   it('some object testing', function(done) {
     
-    expect(client.currentView).to.be.equal(1);
-    expect(client.gridSize).to.be.equal(50);
+   // expect(client.currentView).to.be.equal(1);
     done();
   })
 });
