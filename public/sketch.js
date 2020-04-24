@@ -373,3 +373,14 @@ function drawGameOverView() {
   textSize(messageFontSize);
   text('press any key to start a new game', 0.5 * canvasWidth, 0.9 * canvasHeight);
 }
+
+// Testaamista varten sketch.js-tiedostosta luodaan olio
+class Client {
+  constructor(currentView) {
+    this.currentView = currentView;
+    
+  }
+  gameView() { drawGameView();}
+}
+
+module.exports = Client;
