@@ -3,11 +3,12 @@
 const io = require('socket.io-client')
 var assert = require('chai'),assert;
 const expect = require('chai').expect;
-const Client = require('../public/sketch');
+const Game = require('../public/Game');
 
 const server = require('../index');
-const chai = require('chai');
+
 const api = require('http').createServer(server);
+
 
 describe('Server tests', function() {
 
@@ -86,31 +87,51 @@ describe('Server tests', function() {
 
 describe('Client tests', function() {
   // Will hold the reference to the ColorIncreaser class
-  let client;
-
+  let client1;
+  let client2;
+  let socket1;
+  let socket2;
   // beforeEach is a special function that is similar to the setup function in
   // p5.js.  The major difference it that this function runs before each it()
   // test you create instead of running just once before the draw loop
   // beforeEach lets you setup the objects you want to test in an easy fashion.
-  beforeEach(function() {
-      client = new Client(1);
-      client.socket = io.connect('http://localhost:3000', {
+  before(function() {
+    socket1 = io.connect('http://localhost:3000', {
         'reconnection delay' : 0
         , 'reopen delay' : 0
         , 'force new connection' : true
     });
+    socket2 = io.connect('http://localhost:3000', {
+        'reconnection delay' : 0
+        , 'reopen delay' : 0
+        , 'force new connection' : true
+    });
+    client1 = new Game(socket1);
+    client2 = new Game(socket2);
   });
 
-  it('should be an object', function(done) {
-    expect(client).to.be.a('object');
-    done();
+  it('should update movement', function(done) {
+    expect(client1).to.be.a('object');
+    expect(client2).to.be.a('object');
+    client1.x = 1;
+    client1.y = 2;
+    client1.vx = 1;
+    client1.vy = 0;
+    console.log(client2.opponentSnake);
+    
+    socket2.on('move', (data) => {
+      if (client2.opponentSnake.length > 0) {
+        console.log(client2.opponentSnake);
+        done();
+      }
+    });
+    client1.gameUpdate();
+    expect(client1.mySnake).to.deep.equal([{x:2, y:2}]);
   });
 
   it('some object testing', function(done) {
     
-    expect(client.currentView).to.be.equal(1);
-    client.x = 100
-    client.vx = 1;
+   // expect(client.currentView).to.be.equal(1);
     done();
   })
 });
