@@ -91,10 +91,6 @@ class Game {
     this.y = round(random(this.gridSize));
     this.mySnake[0] = {x:this.x, y: this.y};
     this.countdownValue = 3;
-  // millis() on p5.js-kehyksen funktio, jolla saadaan järjestelmän aika milli-
-  // sekunteina. timeCount-muuttuja alustetaan järjestelmän ajalla, jotta
-  // voidaan päivittää aloitusanimaatio COUNTDOWN_VIEW-näkymässä.
-  //  timeCount = millis();
 
   // Lähetetään tieto omasta aloitussijainnista, jotta palvelin voi lähettää
   // sen vastustajalle.

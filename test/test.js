@@ -6,8 +6,9 @@ const expect = require('chai').expect;
 const Game = require('../public/Game');
 
 const server = require('../index');
-const chai = require('chai');
+
 const api = require('http').createServer(server);
+
 
 describe('Server tests', function() {
 
@@ -109,10 +110,23 @@ describe('Client tests', function() {
     client2 = new Game(socket2);
   });
 
-  it('should be an object', function(done) {
+  it('should update movement', function(done) {
     expect(client1).to.be.a('object');
     expect(client2).to.be.a('object');
-    done();
+    client1.x = 1;
+    client1.y = 2;
+    client1.vx = 1;
+    client1.vy = 0;
+    console.log(client2.opponentSnake);
+    
+    socket2.on('move', (data) => {
+      if (client2.opponentSnake.length > 0) {
+        console.log(client2.opponentSnake);
+        done();
+      }
+    });
+    client1.gameUpdate();
+    expect(client1.mySnake).to.deep.equal([{x:2, y:2}]);
   });
 
   it('some object testing', function(done) {
