@@ -1,4 +1,3 @@
-
 // Pelin piirtoalueen leveys ja korkeus, yksittäisen ruudun koko, tulostaulun
 // korkeus, oletus-fonttikoko sekä lähtölaskenta-animaation pienimmän ja suurimman 
 // fontin koko. Kaikki koot ovat pikseleinä ja ne määrätään setSizes()-metodin avulla.
@@ -32,18 +31,19 @@ let game;
 // P5.js-kehyksen funktio, jota kutsutaan aina ensimmäisenä, kun ohjelma
 // käynnistetään. 
 function setup() {
-  // alustetaaan uusi peli-olio Game.js-tiedoston Game()-luokan avulla.
+  // Alustetaaan uusi peli-olio Game.js-tiedoston Game()-luokan avulla.
+  // Parametriksi annetaan Socket.IO-kehyksen olio, joka alustetaan kehykseen
+  // kuuluvalla io()-metodilla. Tämä metodi huolehtii yhteyden muodostamisesta
+  // palvelimeen, joka on siis oletuksena se palvelin, josta sivu on ladattu.
   game = new Game(io());
+  // Asetetaan game-olion aikalaskuri P5.js kehyksen millis()-metodilla
+  // järjestelmän aikaan millisekunneissa.
   game.timeCount = millis();
   setSizes();
 //  P5.js-kehyksen funktio, jolla luodan uusi piirtopohja.
   createCanvas(canvasWidth, canvasHeight);
-// Socket.IO-kehyksen olio, joka alustetaan kehykseen kuuluvalla io()-metodilla.
-// Tämä metodi huolehtii yhteyden muodostamisesta palvelimeen, joka on siis
-// oletuksena se palvelin, josta sivu on ladattu.
+// 
 }
-
-
 // P5.js-kehyksen funktio, jota kutsutaan aina, kun jotakin nappia
 // painetaan
 function keyPressed() {
@@ -135,9 +135,7 @@ function drawOpeningView() {
   text('press any key to start the game', 0.5 * canvasWidth, 0.8 * canvasHeight);
 }
 
-// Metodi, joka piirtää näkymän, kun peli on käynnissä. Metodi myös päivittää
-// matojen paikat ja tarkistaa, onko pelaajan mato törmännyt.
-
+// Pelinäkymä
 function drawGameView() {
 // pelaajan madon tilaa päivitetään vain jos riittavä aika on kulunut edellisestä
 // päivityksestä ja jos pelaajan mato on korkeintaan yhden ruudun verran pitempi,
@@ -151,17 +149,21 @@ function drawGameView() {
     // 'nollataan' aikalaskuri
     game.timeCount = millis();
     game.gameUpdate();
-// Kutsutaan varsinaista matojen piirto-metodia.
+    // Kutsutaan varsinaista matojen piirto-metodia.
     drawSnakes();
   }
 }
 
+// Matojen piirtometodi
 function drawSnakes() {
+  // Valitaan väriksi keltainen ja piirretään neliö jokaista oman madon koordinaattia
+  // vastaavaan paikkaan
   fill(color('yellow'));
   game.mySnake.forEach(block => {
     rect(block.x * blockSize, block.y * blockSize + scoreboardHeight, blockSize, blockSize);
   });
-
+  // Valitaan väriksi punainen ja piirretään neliö jokaista vastustajan madon 
+  //  koordinaattia vastaavaan paikkaan
   if(game.opponentSnake.length > 0) {
     fill(color('red'));
     game.opponentSnake.forEach(block => {
@@ -221,6 +223,7 @@ function drawCountdownView() {
   }
 }
 
+// Odotusnäkymä
 function drawWaitingForOpponentView() {
   background(backgroundColor);
   fill(color(255));
@@ -230,6 +233,7 @@ function drawWaitingForOpponentView() {
     0.5 * canvasWidth, 0.5 * canvasHeight);
 }
 
+// Vastustaja on poistunut -näkymä
 function drawOpponentHasLeftView() {
   background(backgroundColor);
   fill(color(255));
@@ -239,6 +243,7 @@ function drawOpponentHasLeftView() {
   text('press any key to start a new game', 0.5 * canvasWidth, 0.9 * canvasHeight);
 }
 
+// Piirretään tulostaulu
 function drawScoreboardView() {
   fill(color(100));
   rect(0, 0, canvasWidth, scoreboardHeight);
@@ -251,6 +256,7 @@ function drawScoreboardView() {
   text(game.opponentScore.toString(), 0.6 * canvasWidth, scoreboardHeight / 2);
 }
 
+// Peli pääättynyt -näkymä
 function drawGameOverView() {
   background(backgroundColor);
   drawScoreboardView();

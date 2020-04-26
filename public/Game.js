@@ -2,7 +2,7 @@
 class Game {
   
   constructor(socket) {
-      // Pelialueen ruudukon koko ruutuina leveys- ja korkeussuunnassa.
+    // Pelialueen ruudukon koko ruutuina leveys- ja korkeussuunnassa.
     this.gridSize = 50;
     // Nämä vakiot edustavat kaikkia mahdollisia näkymiä 
     this.OPENING_VIEW = 1;
@@ -12,12 +12,11 @@ class Game {
     this.GAME_OVER_VIEW = 5;
     this.OPPONENT_HAS_LEFT_VIEW = 6;
     this.currentView = this.OPENING_VIEW;
-
+    // Pelin tilan edellisestä päivittämisestä kulunut aika.
     this.timeCount;
-    
     // Socket.IO:n asiakaspuolen olio, jota käytetään palvelimeen yhteyden-
     // ottoon ja viestien välittämiseen.
-    this.socket;
+    this.socket = socket;
     // Pelaajan madon x- ja y-koordinaatit.
     this.x;
     this.y;
@@ -39,10 +38,9 @@ class Game {
     // Tätä muuttujaa käytetään seuraamaan aikaa, joka on kulunut siitä 
     // pelaajan matoa on edellisen kerran kasvatettu. 
     this.timeCount;
-    this.socket = socket;
     this.setSocket();
   }
-
+ 
   setSocket() {
      // Socket.IO-kehyksen on()-metodilla määritetään se funktio, jota kutsutaan aina
   // kun parametrina annettu viesti (eventName) tulee palvelimelta.
@@ -52,7 +50,9 @@ class Game {
     });
   
     this.socket.on('stopGame', () => {
-      this.currentView = this.OPPONENT_HAS_LEFT_VIEW;
+      if(this.currentView === this.GAME_VIEW) {
+        this.currentView = this.OPPONENT_HAS_LEFT_VIEW;
+      }
     });
   // Kun palvelimelta saapuu 'move'-viesti ja sen mukana koordinaatteja 
   // kuvaavaa dataa, se lisätään vastustajan matoa vastaavaan taulukkoon.
@@ -125,7 +125,7 @@ class Game {
     if (this.x > this.gridSize) {this.x = 0;}
     if (this.x < 0) {this.x = this.gridSize;}
     if (this.y > this.gridSize) {this.y = 0;}
-    if (this.y < 0) {this.y = thisgridSize;}
+    if (this.y < 0) {this.y = this.gridSize;}
 // Lisätään nykyinen sijainti pelaajan mato-taulukkoon ja lähetetään 'move'-
 // viesti palvelimelle, jotta se voi välittää uuden ruudun sijainnin
 // vastustajalle.
@@ -134,5 +134,5 @@ class Game {
   }
 
 }
-
+// Testausta varten
 module.exports = Game;
