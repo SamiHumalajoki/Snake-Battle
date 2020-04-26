@@ -1,9 +1,10 @@
-// Testaamista varten sketch.js-tiedostosta luodaan olio
 class Game {
   
   constructor(socket) {
+
     // Pelialueen ruudukon koko ruutuina leveys- ja korkeussuunnassa.
     this.gridSize = 50;
+
     // Nämä vakiot edustavat kaikkia mahdollisia näkymiä 
     this.OPENING_VIEW = 1;
     this.WAITIN_FOR_OPPONENT_VIEW = 2;
@@ -12,29 +13,38 @@ class Game {
     this.GAME_OVER_VIEW = 5;
     this.OPPONENT_HAS_LEFT_VIEW = 6;
     this.currentView = this.OPENING_VIEW;
+
     // Pelin tilan edellisestä päivittämisestä kulunut aika.
     this.timeCount;
+
     // Socket.IO:n asiakaspuolen olio, jota käytetään palvelimeen yhteyden-
     // ottoon ja viestien välittämiseen.
     this.socket = socket;
+
     // Pelaajan madon x- ja y-koordinaatit.
     this.x;
     this.y;
+
     // Pelaajan madon kasvunopeudet ruutuina x- ja y-koordinaattien suhteen.
     // Sallitut arvot ovat -1, 0 ja 1.
     this.vx = 1;
     this.vy = 0;
+
     // Pelaajan ja vastustajan pisteet.
     this.myScore = 0;
     this.opponentScore = 0;
+
     // Pelaajan ja vastustajan matoja kuvaavat taulukot, joihin tallenetaan
     // kaikki x- ja y-koordinaatit pelin edetessä.
     this.mySnake = [];
     this.opponentSnake = [];
+
     // Erän numero. Erä päättyy aina jomman kumman madon törmäykseen.
     this.roundNumber = 0;
+
     // Luku, jota käytetään erän lähtölaskentaan (3, 2, 1, 0).
     this.countdownValue;
+
     // Tätä muuttujaa käytetään seuraamaan aikaa, joka on kulunut siitä 
     // pelaajan matoa on edellisen kerran kasvatettu. 
     this.timeCount;
@@ -80,11 +90,11 @@ class Game {
 
 // Pelin (erän) aloitus-funktio, jota kutsutaan vain kun palvelin on lähettänyt 
 // 'startGame'viestin.
-
   startGame() {
     this.roundNumber++;
     this.opponentSnake = [];
     this.mySnake = [];
+
   // Arvotaan pelaajan aloituspaikka ruudukossa, lisätään pelaaja ensimmäinen
   // ruutu ja asetetaan 
     this.x = round(random(this.gridSize));
@@ -99,17 +109,20 @@ class Game {
   }
 
   gameUpdate() {
+
     // päivitetään tämän hetkinen sijainti
     this.x += this.vx;
     this.y += this.vy;
-// Tarkistetaan, onko oma mato edennyt johonkin ruutuun, joka jo löytyy omasta
-// tai vastustajan madosta.
+
+  // Tarkistetaan, onko oma mato edennyt johonkin ruutuun, joka jo löytyy omasta
+  // tai vastustajan madosta.
     if (this.opponentSnake.find(block => (this.x === block.x && this.y === block.y)) ||
         this.mySnake.find((block, index) => (index < this.mySnake.length - 1 && this.x === block.x && this.y === block.y))) {
-// mikäli osuma tulee lähetetään palvelimelle 'hit'-viesti ja vastustajan
-// pisteitä kasvatetaan yhdellä. Mikäli vastustajan pisteet ovat alle viisi 
-// lähetetään palvelimelle 'readyToStart'-viesti, jotta uusi erä voidaan
-// aloittaa, muutoin siirrytään GAME_OVER_VIEW-näkymään.
+  
+          // mikäli osuma tulee lähetetään palvelimelle 'hit'-viesti ja vastustajan
+  // pisteitä kasvatetaan yhdellä. Mikäli vastustajan pisteet ovat alle viisi 
+  // lähetetään palvelimelle 'readyToStart'-viesti, jotta uusi erä voidaan
+  // aloittaa, muutoin siirrytään GAME_OVER_VIEW-näkymään.
       this.socket.emit('hit');
       this.opponentScore++;
       if (this.opponentScore < 5) {
@@ -120,19 +133,20 @@ class Game {
         this.roundNumber = 0;
       }
     }
-// Mikäli pelaajan mato menee pelialueen reunan yli, mato tulee
-// vastakkaiselta puolelta näkyviin.
+  // Mikäli pelaajan mato menee pelialueen reunan yli, mato tulee
+  // vastakkaiselta puolelta näkyviin.
     if (this.x > this.gridSize) {this.x = 0;}
     if (this.x < 0) {this.x = this.gridSize;}
     if (this.y > this.gridSize) {this.y = 0;}
     if (this.y < 0) {this.y = this.gridSize;}
-// Lisätään nykyinen sijainti pelaajan mato-taulukkoon ja lähetetään 'move'-
-// viesti palvelimelle, jotta se voi välittää uuden ruudun sijainnin
-// vastustajalle.
+
+  // Lisätään nykyinen sijainti pelaajan mato-taulukkoon ja lähetetään 'move'-
+  // viesti palvelimelle, jotta se voi välittää uuden ruudun sijainnin
+  // vastustajalle.
     this.mySnake.push({x: this.x, y: this.y});
     this.socket.emit('move', {x: this.x, y: this.y});
   }
 
 }
-// Testausta varten
+// Testausta varten 
 module.exports = Game;
